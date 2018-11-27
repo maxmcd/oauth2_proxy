@@ -256,7 +256,7 @@ The following environment variables can be used in place of the corresponding co
 
 There are two recommended configurations.
 
-1) Configure SSL Terminiation with OAuth2 Proxy by providing a `--tls-cert=/path/to/cert.pem` and `--tls-key=/path/to/cert.key`.
+1) Configure SSL Termination with OAuth2 Proxy by providing a `--tls-cert=/path/to/cert.pem` and `--tls-key=/path/to/cert.key`.
 
 The command line to run `oauth2_proxy` in this configuration would look like this:
 
@@ -389,6 +389,15 @@ server {
     proxy_set_header X-Real-IP               $remote_addr;
     proxy_set_header X-Scheme                $scheme;
     proxy_set_header X-Auth-Request-Redirect $request_uri;
+  }
+  location = /oauth2/auth {
+    proxy_pass       http://127.0.0.1:4180;
+    proxy_set_header Host             $host;
+    proxy_set_header X-Real-IP        $remote_addr;
+    proxy_set_header X-Scheme         $scheme;
+    # nginx auth_request includes headers but not body
+    proxy_set_header Content-Length   "";
+    proxy_pass_request_body           off;
   }
 
   location / {
